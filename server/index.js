@@ -6,7 +6,12 @@ const apiRoutes = require('./routes/api');
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production'
+    ? [process.env.FRONTEND_URL || 'https://vikram-stratos.netlify.app', /\.netlify\.app$/]
+    : true,
+  credentials: true,
+}));
 app.use(express.json());
 
 // Health check

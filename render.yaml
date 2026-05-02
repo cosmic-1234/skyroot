@@ -1,0 +1,25 @@
+# Render Infrastructure-as-Code
+# https://render.com/docs/blueprint-spec
+
+databases:
+  - name: vikram-stratos-db
+    plan: free
+    databaseName: vikram_stratos
+    user: vikram
+
+services:
+  - type: web
+    name: vikram-stratos-api
+    plan: free
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node index.js
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: vikram-stratos-db
+          property: connectionString
+      - key: NODE_ENV
+        value: production
+    healthCheckPath: /api/health
