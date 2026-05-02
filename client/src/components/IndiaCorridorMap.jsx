@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { MapPin, X, Building2, Users, Gauge, Shield, Package, Wrench, ChevronRight } from 'lucide-react';
+import { MapPin, X, Building2, Users, Gauge, Shield, Package, Wrench, ChevronRight, ArrowRight } from 'lucide-react';
 
 const facilities = [
   {
-    id: 'nagpur', label: 'Nagpur', sub: 'Fire-test stand\nin operation',
-    img: '/images/nagpur.png', x: 28, y: 18, region: 'Nagpur',
+    id: 'nagpur', label: 'Nagpur', sub: 'Engine Testing & Propellant',
+    img: '/images/nagpur.png', region: 'Nagpur',
     details: {
       fullName: 'Nagpur Engine Testing & Propellant Facility',
       type: 'Testing & Manufacturing',
@@ -22,8 +22,8 @@ const facilities = [
     },
   },
   {
-    id: 'hyderabad', label: 'Hyderabad', sub: 'Avionics bay\nintegration clean-room',
-    img: '/images/hyderabad.png', x: 10, y: 55, region: 'Hyderabad',
+    id: 'hyderabad', label: 'Hyderabad', sub: 'Assembly & Avionics QC',
+    img: '/images/hyderabad.png', region: 'Hyderabad',
     details: {
       fullName: 'Hyderabad Assembly & Avionics Integration Complex',
       type: 'Assembly & Integration',
@@ -43,8 +43,8 @@ const facilities = [
     },
   },
   {
-    id: 'sriharikota', label: 'Sriharikota', sub: 'Launch pad service\nstructure',
-    img: '/images/sriharikota.png', x: 55, y: 70, region: 'Sriharikota',
+    id: 'sriharikota', label: 'Sriharikota', sub: 'Vehicle Assembly & Launch',
+    img: '/images/sriharikota.png', region: 'Sriharikota',
     details: {
       fullName: 'Satish Dhawan Space Centre — Launch Complex',
       type: 'Launch & Final Assembly',
@@ -59,8 +59,6 @@ const facilities = [
   },
 ];
 
-const corridorPath = "M 180 95 Q 200 160 165 215 Q 180 250 265 280";
-
 export default function IndiaCorridorMap({ corridorData = [] }) {
   const [selected, setSelected] = useState(null);
 
@@ -73,59 +71,57 @@ export default function IndiaCorridorMap({ corridorData = [] }) {
     return corridorData.find(c => c.region === region) || {};
   };
 
-  return (
-    <div className="relative w-full" style={{ minHeight: '340px' }}>
-      {/* SVG India outline + corridor lines */}
-      <svg viewBox="0 0 400 360" className="absolute inset-0 w-full h-full" style={{ opacity: 0.5 }}>
-        <path d="M 160 20 Q 200 15 240 30 Q 280 45 300 80 Q 310 120 290 160 Q 280 200 300 240 Q 310 280 280 320 Q 250 350 220 340 Q 190 360 160 340 Q 130 320 120 280 Q 100 250 110 210 Q 90 180 100 140 Q 110 100 130 60 Q 140 35 160 20Z"
-          fill="rgba(59, 130, 246, 0.04)" stroke="rgba(59, 130, 246, 0.12)" strokeWidth="1" />
-        <path d={corridorPath} fill="none" stroke="rgba(59, 130, 246, 0.3)" strokeWidth="2" strokeDasharray="6 4" />
-        <circle r="3" fill="#3b82f6" opacity="0.8">
-          <animateMotion dur="4s" repeatCount="indefinite" path={corridorPath} />
-        </circle>
-        <circle r="3" fill="#06b6d4" opacity="0.6">
-          <animateMotion dur="4s" begin="2s" repeatCount="indefinite" path={corridorPath} />
-        </circle>
-        <circle cx="180" cy="95" r="4" fill="#3b82f6" opacity="0.8" />
-        <circle cx="165" cy="215" r="4" fill="#3b82f6" opacity="0.8" />
-        <circle cx="265" cy="280" r="4" fill="#22c55e" opacity="0.8" />
-        <circle cx="180" cy="95" r="8" fill="none" stroke="rgba(59,130,246,0.2)" strokeWidth="1" />
-        <circle cx="165" cy="215" r="8" fill="none" stroke="rgba(59,130,246,0.2)" strokeWidth="1" />
-        <circle cx="265" cy="280" r="8" fill="none" stroke="rgba(34,197,94,0.2)" strokeWidth="1" />
-      </svg>
+  const scoreColor = (s) => s >= 0.88 ? 'text-green' : s >= 0.75 ? 'text-yellow' : 'text-red';
+  const scoreBg = (s) => s >= 0.88 ? 'bg-green/15 border-green/25' : s >= 0.75 ? 'bg-yellow/15 border-yellow/25' : 'bg-red/15 border-red/25';
 
-      {/* Facility cards overlaid on map */}
-      {facilities.map(f => {
-        const score = getScore(f.region);
-        return (
-          <div key={f.id} className="absolute group" style={{ left: `${f.x}%`, top: `${f.y}%` }}>
-            <div
-              onClick={() => setSelected(f)}
-              className="card p-0 overflow-hidden w-[170px] hover:border-blue/40 transition-all hover:shadow-lg hover:shadow-blue/10 cursor-pointer"
-            >
-              <div className="card-inner p-0">
-                <div className="img-overlay h-[80px]">
-                  <img src={f.img} alt={f.label} loading="lazy" />
-                </div>
-                <div className="p-2.5">
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <MapPin size={10} className="text-blue" />
-                    <span className="text-[12px] font-semibold text-text-primary">{f.label}</span>
-                    <span className={`ml-auto text-[10px] font-mono font-semibold ${score >= 0.88 ? 'text-green' : score >= 0.75 ? 'text-yellow' : 'text-red'}`}>
+  return (
+    <div>
+      {/* Horizontal corridor flow */}
+      <div className="flex items-stretch gap-2">
+        {facilities.map((f, i) => {
+          const score = getScore(f.region);
+          return (
+            <div key={f.id} className="flex items-center flex-1 min-w-0">
+              {/* Facility card */}
+              <div
+                onClick={() => setSelected(f)}
+                className="card p-0 overflow-hidden flex-1 min-w-0 hover:border-blue/40 transition-all hover:shadow-lg hover:shadow-blue/8 cursor-pointer group"
+              >
+                <div className="card-inner p-0">
+                  {/* Image */}
+                  <div className="relative h-[72px] overflow-hidden">
+                    <img src={f.img} alt={f.label} loading="lazy" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-bg-card via-transparent to-transparent" />
+                    {/* Health badge */}
+                    <div className={`absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold border ${scoreBg(score)} ${scoreColor(score)}`}>
                       {(score * 100).toFixed(0)}%
-                    </span>
+                    </div>
                   </div>
-                  <p className="text-[10px] text-text-muted leading-tight whitespace-pre-line">{f.sub}</p>
-                  <div className="flex items-center gap-1 mt-1.5 text-[9px] text-blue opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span>View details</span>
-                    <ChevronRight size={8} />
+                  {/* Info */}
+                  <div className="p-2">
+                    <div className="flex items-center gap-1 mb-0.5">
+                      <MapPin size={9} className="text-blue shrink-0" />
+                      <span className="text-[11px] font-semibold text-text-primary truncate">{f.label}</span>
+                    </div>
+                    <p className="text-[9px] text-text-muted leading-tight truncate">{f.sub}</p>
+                    <div className="flex items-center gap-1 mt-1.5 text-[8px] text-blue opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span>Details</span>
+                      <ChevronRight size={7} />
+                    </div>
                   </div>
                 </div>
               </div>
+
+              {/* Arrow connector (not after last) */}
+              {i < facilities.length - 1 && (
+                <div className="flex flex-col items-center px-1.5 shrink-0">
+                  <ArrowRight size={14} className="text-blue/40" />
+                </div>
+              )}
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
 
       {/* Detail modal overlay */}
       {selected && (
@@ -146,9 +142,7 @@ export default function IndiaCorridorMap({ corridorData = [] }) {
                 <div className="flex items-center gap-2">
                   <MapPin size={14} className="text-blue" />
                   <h2 className="text-[16px] font-bold text-white">{selected.label}</h2>
-                  <span className={`text-[11px] font-mono font-bold px-1.5 py-0.5 rounded ${
-                    getScore(selected.region) >= 0.88 ? 'bg-green/20 text-green' : getScore(selected.region) >= 0.75 ? 'bg-yellow/20 text-yellow' : 'bg-red/20 text-red'
-                  }`}>
+                  <span className={`text-[11px] font-mono font-bold px-1.5 py-0.5 rounded border ${scoreBg(getScore(selected.region))} ${scoreColor(getScore(selected.region))}`}>
                     {(getScore(selected.region) * 100).toFixed(0)}% Health
                   </span>
                 </div>
