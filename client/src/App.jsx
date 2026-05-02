@@ -9,7 +9,7 @@ import StressTestSidebar from './components/StressTestSidebar';
 import { fetchDashboard } from './api/client';
 import {
   Calendar, AlertTriangle, Package, ShieldAlert,
-  ChevronRight, Loader2, AlertCircle, Rocket
+  ChevronRight, Loader2, AlertCircle
 } from 'lucide-react';
 
 const DEMO = {
@@ -37,7 +37,7 @@ const DEMO = {
     const month = Math.floor(i / 5);
     const base = [45, 180, 450, 2.8, 22][i % 5];
     const qty = base * (1 - month * 0.06 + Math.random() * 0.08);
-    const d = new Date(2026, 5 + month, 1); // June 2026 + month offset
+    const d = new Date(2026, 5 + month, 1);
     const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`;
     return { snapshot_date: dateStr, material_name: mat, days_of_supply: Math.max(3, qty / (base * 0.12)).toFixed(1) };
   }),
@@ -60,46 +60,49 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-bg-base flex items-center justify-center">
-        <Loader2 size={20} className="animate-spin text-blue mr-3" />
-        <span className="text-[13px] text-text-muted">Connecting to live telemetry...</span>
+      <div className="min-h-screen bg-bg-base flex flex-col items-center justify-center gap-4">
+        <div className="relative">
+          <Loader2 size={24} className="animate-spin text-cyan" />
+          <div className="absolute -inset-2 rounded-full bg-cyan/10 blur-lg" />
+        </div>
+        <span className="text-[12px] text-text-muted font-light tracking-wide">Connecting to mission telemetry...</span>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-bg-base">
+    <div className="min-h-screen bg-bg-base relative">
       <Header />
 
       {/* Pre-Flight Status Ticker */}
-      <div className="border-b border-border bg-bg-card/60 overflow-hidden h-7 flex items-center">
-        <span className="shrink-0 text-[10px] font-semibold text-text-muted uppercase tracking-wider px-4 border-r border-border bg-bg-elevated h-full flex items-center">
-          Pre-Flight Status
+      <div className="border-b border-border bg-bg-surface/60 overflow-hidden h-7 flex items-center">
+        <span className="shrink-0 text-[9px] font-medium text-text-dim uppercase tracking-[0.1em] px-5 border-r border-border h-full flex items-center">
+          Live
         </span>
         <div className="overflow-hidden flex-1 relative">
-          <div className="ticker-animate whitespace-nowrap flex items-center gap-8 text-[11px]">
-            {isDemo && <span className="text-yellow">Connecting to live telemetry</span>}
-            <span className="text-text-secondary">Critical SPOF: <span className="text-orange font-medium">Inconel 718 — Batch rejection active, replacement in transit</span></span>
-            <span className="text-text-muted">|</span>
-            <span className="text-text-secondary">Corridor: <span className="text-green font-medium">Nagpur 89% → Hyderabad 86% → Sriharikota 92%</span></span>
-            <span className="text-text-muted">|</span>
-            <span className="text-text-secondary">Next milestone: <span className="text-blue font-medium">Stage-2 integration T-45 days</span></span>
-            <span className="text-text-muted">|</span>
-            <span className="text-text-secondary">Weather: <span className="text-yellow font-medium">Monsoon season approaching NH-44 corridor</span></span>
+          <div className="ticker-animate whitespace-nowrap flex items-center gap-10 text-[11px] font-light">
+            {isDemo && <span className="text-yellow/80">Connecting to live telemetry</span>}
+            <span className="text-text-muted">SPOF: <span className="text-orange font-normal">Inconel 718 — Batch rejection, replacement in transit</span></span>
+            <span className="text-text-dim">·</span>
+            <span className="text-text-muted">Corridor: <span className="text-green font-normal">Nagpur 89% → Hyderabad 86% → Sriharikota 92%</span></span>
+            <span className="text-text-dim">·</span>
+            <span className="text-text-muted">Milestone: <span className="text-cyan font-normal">Stage-2 integration T-45 days</span></span>
+            <span className="text-text-dim">·</span>
+            <span className="text-text-muted">Weather: <span className="text-yellow/80 font-normal">Monsoon approaching NH-44</span></span>
           </div>
         </div>
       </div>
 
-      <main className="max-w-[1600px] mx-auto px-5 py-4">
-        <div className="grid grid-cols-12 gap-4">
+      <main className="max-w-[1600px] mx-auto px-6 py-5 relative z-10">
+        <div className="grid grid-cols-12 gap-5">
 
           {/* ═══ LEFT COLUMN ═══ */}
-          <div className="col-span-12 lg:col-span-3 space-y-4">
+          <div className="col-span-12 lg:col-span-3 space-y-5">
 
-            {/* Stats — stacked vertically on left */}
+            {/* KPI Stats */}
             <div className="grid grid-cols-2 gap-3">
               {[
-                { icon: Calendar, label: 'NEXT LAUNCH', value: `T-${daysOut}d`, sub: next?.mission_name, img: '/images/rocket.png' },
+                { icon: Calendar, label: 'NEXT LAUNCH', value: `T-${daysOut}d`, sub: next?.mission_name },
                 { icon: AlertTriangle, label: 'DELAY RISK', value: `${next?.critical_path_delay_days || 0}d`, sub: 'Critical path estimate' },
                 { icon: Package, label: 'MATERIALS SHORT', value: next?.materials_short || 0, sub: `of ${next?.total_materials || 0} required` },
                 { icon: ShieldAlert, label: 'ACTIVE EVENTS', value: data?.recent_events?.length || 0, sub: 'Disruptions tracked' },
@@ -107,17 +110,14 @@ export default function App() {
                 const Icon = s.icon;
                 const danger = (i === 1 && next?.critical_path_delay_days > 14) || (i === 2 && next?.materials_short > 10);
                 return (
-                  <div key={i} className="card overflow-hidden">
-                    <div className="card-inner p-3">
-                      <div className="flex items-center gap-1.5 mb-1.5">
-                        <Icon size={11} className="text-text-dim" />
-                        <span className="text-[9px] text-text-dim font-semibold uppercase tracking-wider">{s.label}</span>
+                  <div key={i} className="card">
+                    <div className="card-inner p-4">
+                      <div className="flex items-center gap-1.5 mb-2">
+                        <Icon size={10} className="text-text-dim" />
+                        <span className="text-[8px] text-text-dim font-medium uppercase tracking-[0.12em]">{s.label}</span>
                       </div>
-                      <div className="flex items-end gap-2">
-                        <span className={`text-[20px] font-bold font-mono tracking-tight ${danger ? 'text-red' : 'text-text-primary'}`}>{s.value}</span>
-                        {s.img && <img src={s.img} alt="" className="h-8 w-auto object-contain opacity-50 ml-auto" />}
-                      </div>
-                      <p className="text-[10px] text-text-dim mt-0.5 truncate">{s.sub}</p>
+                      <span className={`text-[22px] font-semibold font-mono tracking-tight leading-none ${danger ? 'text-red' : 'text-text-primary'}`}>{s.value}</span>
+                      <p className="text-[10px] text-text-dim mt-1.5 font-light truncate">{s.sub}</p>
                     </div>
                   </div>
                 );
@@ -126,44 +126,44 @@ export default function App() {
 
             {/* Readiness Gauge */}
             <div className="card">
-              <div className="card-inner p-4 flex items-center justify-center">
+              <div className="card-inner p-5 flex items-center justify-center">
                 <LaunchReadinessGauge percent={readiness} missionName={next?.mission_name} targetDate={`T-${daysOut} days`} />
               </div>
             </div>
 
             {/* Mission Pipeline */}
             <div className="card">
-              <div className="card-inner p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-[12px] font-semibold text-text-primary">Mission Pipeline</h2>
+              <div className="card-inner p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-[11px] font-semibold text-text-primary tracking-wide uppercase">Mission Pipeline</h2>
                   <span className="text-[10px] text-text-dim font-mono">{data?.launches?.length || 0} missions</span>
                 </div>
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   {(data?.launches || []).map((l, i) => {
                     const pct = parseFloat(l.material_readiness_percent || 0);
                     const delay = l.critical_path_delay_days || 0;
                     const color = pct >= 60 ? 'bg-green' : pct >= 30 ? 'bg-yellow' : 'bg-red';
                     const textColor = pct >= 60 ? 'text-green' : pct >= 30 ? 'text-yellow' : 'text-red';
                     return (
-                      <div key={i} className="group flex items-center gap-3 p-2 rounded-md hover:bg-bg-hover transition-colors cursor-pointer">
+                      <div key={i} className="group flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-bg-hover/60 transition-all duration-300 cursor-pointer">
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5">
+                          <div className="flex items-center gap-2">
                             <span className="text-[12px] font-medium text-text-primary truncate">{l.mission_name}</span>
                             {delay > 14 && (
-                              <span className="text-[9px] font-semibold text-red bg-red-dim px-1 py-0.5 rounded">+{delay}d risk</span>
+                              <span className="text-[8px] font-semibold text-red bg-red-dim px-1.5 py-0.5 rounded-full">+{delay}d</span>
                             )}
                           </div>
-                          <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-[10px] text-text-dim font-mono">{l.target_date}</span>
-                            <span className={`text-[10px] font-semibold ${textColor}`}>{pct.toFixed(1)}% ready</span>
+                          <div className="flex items-center gap-3 mt-1">
+                            <span className="text-[10px] text-text-dim font-mono font-light">{l.target_date}</span>
+                            <span className={`text-[10px] font-medium ${textColor}`}>{pct.toFixed(1)}%</span>
                           </div>
                         </div>
-                        <div className="w-20">
-                          <div className="h-1.5 rounded-full bg-bg-base">
-                            <div className={`h-1.5 rounded-full ${color} transition-all`} style={{ width: `${Math.min(100, pct)}%` }} />
+                        <div className="w-16">
+                          <div className="h-1 rounded-full bg-bg-hover">
+                            <div className={`h-1 rounded-full ${color} transition-all duration-500`} style={{ width: `${Math.min(100, pct)}%` }} />
                           </div>
                         </div>
-                        <ChevronRight size={12} className="text-text-dim opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <ChevronRight size={11} className="text-text-dim opacity-0 group-hover:opacity-60 transition-opacity duration-300" />
                       </div>
                     );
                   })}
@@ -173,14 +173,18 @@ export default function App() {
           </div>
 
           {/* ═══ CENTER COLUMN ═══ */}
-          <div className="col-span-12 lg:col-span-6 space-y-4">
+          <div className="col-span-12 lg:col-span-6 space-y-5">
 
             {/* Critical SPOF Banner */}
-            <div className="card border-orange/30 bg-orange/5">
-              <div className="flex items-center gap-3 px-4 py-2.5">
-                <AlertCircle size={14} className="text-orange shrink-0" />
-                <p className="text-[11px] text-text-secondary">
-                  <span className="font-semibold text-orange">Critical SPOF:</span> Inconel 718 batch rejection — metallurgical defect detected. 21-day replacement cycle active. Estimated cost impact: $94,500.
+            <div className="card border-orange/15 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-orange/5 via-transparent to-transparent" />
+              <div className="flex items-center gap-3 px-5 py-3 relative">
+                <div className="relative">
+                  <AlertCircle size={14} className="text-orange" />
+                  <div className="absolute -inset-1 rounded-full bg-orange/15 blur-sm" />
+                </div>
+                <p className="text-[11px] text-text-secondary font-light leading-relaxed">
+                  <span className="font-medium text-orange">Critical SPOF:</span> Inconel 718 batch rejection — metallurgical defect detected. 21-day replacement cycle active. Est. cost impact: $94,500.
                 </p>
               </div>
             </div>
@@ -194,21 +198,21 @@ export default function App() {
 
             {/* Supply Chain Corridor */}
             <div className="card">
-              <div className="card-inner p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-[12px] font-semibold text-text-primary">Supply Chain Corridor</h2>
-                  <span className="text-[10px] text-text-dim">Nagpur → Hyderabad → Sriharikota</span>
+              <div className="card-inner p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-[11px] font-semibold text-text-primary tracking-wide uppercase">Supply Chain Corridor</h2>
+                  <span className="text-[10px] text-text-dim font-light">Nagpur → Hyderabad → Sriharikota</span>
                 </div>
                 <IndiaCorridorMap corridorData={data?.corridor_health || []} />
               </div>
             </div>
 
-            {/* Bottleneck Trendline — inventory depletion vs production needs */}
+            {/* Bottleneck Trendline */}
             <div className="card">
-              <div className="card-inner p-4">
-                <div className="flex items-center justify-between mb-1">
-                  <h2 className="text-[12px] font-semibold text-text-primary">Bottleneck Trendline — Days of Supply</h2>
-                  <span className="text-[10px] text-text-dim">12-month trend</span>
+              <div className="card-inner p-5">
+                <div className="flex items-center justify-between mb-2">
+                  <h2 className="text-[11px] font-semibold text-text-primary tracking-wide uppercase">Bottleneck Trendline</h2>
+                  <span className="text-[10px] text-text-dim font-light">12-month · Days of Supply</span>
                 </div>
                 <BottleneckTrendline inventoryData={data?.inventory_trends || []} />
               </div>
@@ -217,38 +221,38 @@ export default function App() {
 
           {/* ═══ RIGHT COLUMN ═══ */}
           <div className="col-span-12 lg:col-span-3">
-            <div className="sticky top-14 space-y-4">
+            <div className="sticky top-14 space-y-5">
 
               {/* Stress Test */}
               <StressTestSidebar />
 
               {/* Inventory with material images */}
               <div className="card">
-                <div className="card-inner p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <h2 className="text-[12px] font-semibold text-text-primary">Inventory — Days of Supply</h2>
-                    <span className="text-[10px] text-text-dim">12-month trend</span>
+                <div className="card-inner p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-[11px] font-semibold text-text-primary tracking-wide uppercase">Inventory</h2>
+                    <span className="text-[10px] text-text-dim font-light">Days of Supply</span>
                   </div>
                   <MaterialInventory inventoryData={data?.inventory_trends || []} />
                 </div>
               </div>
 
-              {/* Disruption events compact */}
+              {/* Disruption events */}
               <div className="card">
-                <div className="card-inner p-4">
-                  <h2 className="text-[12px] font-semibold text-text-primary mb-3">Recent Disruptions</h2>
-                  <div className="space-y-2">
+                <div className="card-inner p-5">
+                  <h2 className="text-[11px] font-semibold text-text-primary tracking-wide uppercase mb-4">Recent Disruptions</h2>
+                  <div className="space-y-3">
                     {(data?.recent_events || []).slice(0, 4).map((evt, i) => (
-                      <div key={i} className="flex items-start gap-2.5 py-1.5 border-b border-border last:border-0">
-                        <span className={`w-1.5 h-1.5 rounded-full mt-1 shrink-0 ${
+                      <div key={i} className="flex items-start gap-3 py-2 border-b border-border/50 last:border-0">
+                        <span className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${
                           evt.severity === 'Critical' ? 'bg-red' : evt.severity === 'High' ? 'bg-orange' : 'bg-yellow'
                         }`} />
                         <div className="flex-1 min-w-0">
-                          <p className="text-[11px] text-text-secondary leading-snug">{evt.description}</p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className="text-[9px] text-text-dim font-mono">{evt.event_date}</span>
+                          <p className="text-[11px] text-text-secondary font-light leading-relaxed">{evt.description}</p>
+                          <div className="flex items-center gap-3 mt-1.5">
+                            <span className="text-[9px] text-text-dim font-mono font-light">{evt.event_date}</span>
                             {evt.impact_days > 0 && (
-                              <span className="text-[9px] font-mono font-semibold text-red">+{evt.impact_days}d</span>
+                              <span className="text-[9px] font-mono font-medium text-red">+{evt.impact_days}d</span>
                             )}
                           </div>
                         </div>

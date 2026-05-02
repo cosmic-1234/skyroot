@@ -2,87 +2,158 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg-base: #060a10;
-  --color-bg-card: #0c1220;
-  --color-bg-elevated: #111827;
-  --color-bg-hover: #1a2332;
-  --color-bg-input: #0f172a;
-  --color-border: rgba(56, 89, 138, 0.25);
-  --color-border-bright: rgba(59, 130, 246, 0.35);
-  --color-text-primary: #f1f5f9;
+  /* ── Deep charcoal / midnight blue palette ── */
+  --color-bg-base: #05080e;
+  --color-bg-surface: #080c15;
+  --color-bg-card: rgba(10, 16, 28, 0.65);
+  --color-bg-elevated: rgba(15, 23, 42, 0.7);
+  --color-bg-hover: rgba(30, 41, 59, 0.4);
+  --color-bg-input: rgba(15, 23, 42, 0.5);
+  --color-bg-glass: rgba(12, 18, 32, 0.45);
+
+  /* ── Borders — ultra thin, barely visible ── */
+  --color-border: rgba(148, 163, 184, 0.08);
+  --color-border-bright: rgba(56, 189, 248, 0.2);
+  --color-border-glow: rgba(6, 182, 212, 0.15);
+
+  /* ── Typography hierarchy ── */
+  --color-text-primary: #f0f4f8;
   --color-text-secondary: #94a3b8;
   --color-text-muted: #64748b;
-  --color-text-dim: #475569;
-  --color-blue: #3b82f6;
-  --color-blue-glow: rgba(59, 130, 246, 0.15);
+  --color-text-dim: #3e4c5e;
+
+  /* ── Accent palette — cooler, more cyan-forward ── */
+  --color-blue: #38bdf8;
+  --color-blue-glow: rgba(56, 189, 248, 0.12);
   --color-cyan: #06b6d4;
-  --color-green: #22c55e;
-  --color-green-dim: rgba(34, 197, 94, 0.15);
-  --color-yellow: #eab308;
-  --color-yellow-dim: rgba(234, 179, 8, 0.15);
-  --color-red: #ef4444;
-  --color-red-dim: rgba(239, 68, 68, 0.15);
-  --color-orange: #f97316;
+  --color-cyan-glow: rgba(6, 182, 212, 0.1);
+  --color-green: #34d399;
+  --color-green-dim: rgba(52, 211, 153, 0.12);
+  --color-yellow: #fbbf24;
+  --color-yellow-dim: rgba(251, 191, 36, 0.1);
+  --color-red: #f87171;
+  --color-red-dim: rgba(248, 113, 113, 0.1);
+  --color-orange: #fb923c;
+
+  /* ── Typography ── */
   --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-family-mono: 'JetBrains Mono', monospace;
 }
 
+/* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+html {
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
 body {
   font-family: var(--font-family-sans);
+  font-weight: 400;
+  letter-spacing: -0.01em;
   background: var(--color-bg-base);
   color: var(--color-text-primary);
   min-height: 100vh;
 }
 
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.2); border-radius: 4px; }
+/* ── Ambient background glow ── */
+body::before {
+  content: '';
+  position: fixed;
+  top: -30%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  height: 60vh;
+  background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(6, 182, 212, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
 
-/* Card base */
+/* ── Custom scrollbar ── */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.15); border-radius: 4px; }
+.custom-scrollbar::-webkit-scrollbar { width: 3px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.15); border-radius: 4px; }
+
+/* ── Glassmorphism card system ── */
 .card {
   background: var(--color-bg-card);
   border: 1px solid var(--color-border);
-  border-radius: 12px;
-  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  backdrop-filter: blur(24px) saturate(1.3);
+  -webkit-backdrop-filter: blur(24px) saturate(1.3);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.card:hover {
+  border-color: var(--color-border-glow);
 }
 .card-inner {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.03) 0%, transparent 50%);
-  border-radius: 12px;
+  background: linear-gradient(165deg, rgba(56, 189, 248, 0.02) 0%, transparent 40%);
+  border-radius: 16px;
   height: 100%;
 }
 
-/* Gauge ring animation */
-@keyframes gauge-pulse {
-  0%, 100% { filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.3)); }
-  50% { filter: drop-shadow(0 0 16px rgba(59, 130, 246, 0.5)); }
+/* ── Section divider — subtle light line ── */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--color-border) 50%, transparent 100%);
 }
 
-/* Scrolling ticker */
+/* ── Gauge pulse animation ── */
+@keyframes gauge-pulse {
+  0%, 100% { filter: drop-shadow(0 0 12px rgba(6, 182, 212, 0.25)); }
+  50% { filter: drop-shadow(0 0 24px rgba(6, 182, 212, 0.45)); }
+}
+
+/* ── Subtle glow for status indicators ── */
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.status-live {
+  animation: status-pulse 2s ease-in-out infinite;
+}
+
+/* ── Scrolling ticker ── */
 @keyframes ticker-scroll {
   0% { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
 }
 .ticker-animate {
-  animation: ticker-scroll 30s linear infinite;
+  animation: ticker-scroll 40s linear infinite;
 }
 
-/* Image overlay */
+/* ── Image overlay with cinematic gradient ── */
 .img-overlay {
   position: relative;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 12px;
 }
 .img-overlay::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 40%, rgba(6, 10, 16, 0.85) 100%);
+  background: linear-gradient(180deg, transparent 30%, rgba(5, 8, 14, 0.9) 100%);
   pointer-events: none;
 }
 .img-overlay img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  filter: brightness(0.85) contrast(1.05);
+}
+
+/* ── Focus ring for accessibility ── */
+button:focus-visible, input:focus-visible {
+  outline: 1px solid var(--color-cyan);
+  outline-offset: 2px;
+}
+
+/* ── Slider track ── */
+input[type="range"] {
+  background: linear-gradient(90deg, rgba(6, 182, 212, 0.3), rgba(56, 189, 248, 0.3));
+  border-radius: 999px;
 }

@@ -30,7 +30,7 @@ export default function CentralRocketViz({ percent = 63, missionName = 'Vikram-1
       // Subtle outer ring
       ctx.beginPath();
       ctx.arc(cx, cy, r + 12, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(59, 130, 246, 0.04)';
+      ctx.strokeStyle = 'rgba(6, 182, 212, 0.04)';
       ctx.lineWidth = 1;
       ctx.stroke();
 
@@ -58,9 +58,9 @@ export default function CentralRocketViz({ percent = 63, missionName = 'Vikram-1
       // Value arc — gradient from blue to cyan to green
       const valueAngle = startAngle + (sweep * current / 100);
       const grad = ctx.createConicGradient(startAngle, cx, cy);
-      grad.addColorStop(0, '#3b82f6');
+      grad.addColorStop(0, '#38bdf8');
       grad.addColorStop(Math.min(current / 200, 0.49), '#06b6d4');
-      grad.addColorStop(Math.min(current / 100, 0.99), current >= 60 ? '#22c55e' : current >= 30 ? '#eab308' : '#ef4444');
+      grad.addColorStop(Math.min(current / 100, 0.99), current >= 60 ? '#34d399' : current >= 30 ? '#fbbf24' : '#f87171');
       grad.addColorStop(Math.min(current / 100 + 0.001, 1), 'transparent');
       grad.addColorStop(1, 'transparent');
 
@@ -75,7 +75,7 @@ export default function CentralRocketViz({ percent = 63, missionName = 'Vikram-1
       ctx.save();
       ctx.beginPath();
       ctx.arc(cx, cy, r, startAngle, valueAngle);
-      ctx.strokeStyle = 'rgba(59, 130, 246, 0.15)';
+      ctx.strokeStyle = 'rgba(6, 182, 212, 0.12)';
       ctx.lineWidth = 18;
       ctx.filter = 'blur(10px)';
       ctx.stroke();
@@ -86,7 +86,7 @@ export default function CentralRocketViz({ percent = 63, missionName = 'Vikram-1
       const dotY = cy + Math.sin(valueAngle) * r;
       ctx.beginPath();
       ctx.arc(dotX, dotY, 4, 0, Math.PI * 2);
-      ctx.fillStyle = current >= 60 ? '#22c55e' : current >= 30 ? '#eab308' : '#ef4444';
+      ctx.fillStyle = current >= 60 ? '#34d399' : current >= 30 ? '#fbbf24' : '#f87171';
       ctx.fill();
 
       if (current < percent) requestAnimationFrame(draw);
@@ -99,18 +99,18 @@ export default function CentralRocketViz({ percent = 63, missionName = 'Vikram-1
   const statusBg = percent >= 60 ? 'bg-green/10 border-green/20' : percent >= 30 ? 'bg-yellow/10 border-yellow/20' : 'bg-red/10 border-red/20';
 
   return (
-    <div className="flex flex-col items-center justify-center py-6 px-4">
+    <div className="flex flex-col items-center justify-center py-8 px-6">
       <div className="relative">
         <canvas ref={canvasRef} />
         {/* Center content — overlaid inside the gauge ring */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-          <div className="w-10 h-10 rounded-full bg-blue/10 border border-blue/20 flex items-center justify-center mb-3">
-            <Rocket size={18} className="text-blue" />
+          <div className="w-10 h-10 rounded-full bg-cyan/8 border border-cyan/15 flex items-center justify-center mb-3">
+            <Rocket size={18} className="text-cyan" />
           </div>
-          <span className="text-[42px] font-bold text-text-primary tracking-tight leading-none font-mono">
+          <span className="text-[44px] font-semibold text-text-primary tracking-tight leading-none font-mono">
             {Math.round(percent)}%
           </span>
-          <span className="text-[11px] text-text-muted mt-1.5 uppercase tracking-widest">Readiness</span>
+          <span className="text-[10px] text-text-muted mt-2 uppercase tracking-[0.2em] font-light">Readiness</span>
           <div className={`mt-3 px-2.5 py-1 rounded-full border text-[10px] font-semibold ${statusBg} ${statusColor}`}>
             {status}
           </div>

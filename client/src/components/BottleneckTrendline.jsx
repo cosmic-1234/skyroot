@@ -23,7 +23,7 @@ export default function BottleneckTrendline({ inventoryData = [] }) {
       return row;
     });
 
-  const colors = ['#3b82f6', '#22c55e', '#eab308', '#ef4444', '#8b5cf6'];
+  const colors = ['#38bdf8', '#34d399', '#fbbf24', '#f87171', '#a78bfa'];
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (!active || !payload?.length) return null;
