@@ -28,8 +28,8 @@ export default function BottleneckTrendline({ inventoryData = [] }) {
   const CustomTooltip = ({ active, payload, label }) => {
     if (!active || !payload?.length) return null;
     return (
-      <div className="bg-bg-card border border-border rounded-lg p-3 shadow-xl">
-        <p className="text-[11px] text-text-muted font-mono mb-2">{label}</p>
+      <div className="bg-bg-card/95 backdrop-blur-2xl border border-border rounded-xl p-3 shadow-2xl shadow-black/40">
+        <p className="text-[10px] text-text-dim font-mono mb-2 font-light">{label}</p>
         {payload.map((p, i) => (
           <div key={i} className="flex items-center justify-between gap-4 py-0.5">
             <div className="flex items-center gap-1.5">
@@ -57,8 +57,8 @@ export default function BottleneckTrendline({ inventoryData = [] }) {
       <div className="flex flex-wrap gap-x-4 gap-y-1 mb-4">
         {topMaterials.map((mat, i) => (
           <div key={mat} className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-sm" style={{ background: colors[i] }} />
-            <span className="text-[11px] text-text-muted truncate max-w-[160px]">{mat}</span>
+            <span className="w-1.5 h-1.5 rounded-full" style={{ background: colors[i] }} />
+            <span className="text-[10px] text-text-dim truncate max-w-[160px] font-light">{mat}</span>
           </div>
         ))}
       </div>
@@ -73,9 +73,9 @@ export default function BottleneckTrendline({ inventoryData = [] }) {
                 </linearGradient>
               ))}
             </defs>
-            <CartesianGrid stroke="rgba(30,41,59,0.5)" strokeDasharray="none" vertical={false} />
-            <XAxis dataKey="month" stroke="#475569" fontSize={10} fontFamily="'JetBrains Mono'" tickLine={false} axisLine={false} />
-            <YAxis stroke="#475569" fontSize={10} fontFamily="'JetBrains Mono'" tickLine={false} axisLine={false} />
+            <CartesianGrid stroke="rgba(148,163,184,0.05)" strokeDasharray="none" vertical={false} />
+            <XAxis dataKey="month" stroke="#3e4c5e" fontSize={10} fontFamily="'JetBrains Mono'" tickLine={false} axisLine={false} />
+            <YAxis stroke="#3e4c5e" fontSize={10} fontFamily="'JetBrains Mono'" tickLine={false} axisLine={false} />
             <Tooltip content={<CustomTooltip />} />
             {topMaterials.map((mat, i) => (
               <Area key={mat} type="monotone" dataKey={mat} name={mat}

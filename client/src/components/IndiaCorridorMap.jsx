@@ -77,7 +77,7 @@ export default function IndiaCorridorMap({ corridorData = [] }) {
   return (
     <div>
       {/* Horizontal corridor flow */}
-      <div className="flex items-stretch gap-2">
+      <div className="flex items-stretch gap-3">
         {facilities.map((f, i) => {
           const score = getScore(f.region);
           return (
@@ -85,37 +85,37 @@ export default function IndiaCorridorMap({ corridorData = [] }) {
               {/* Facility card */}
               <div
                 onClick={() => setSelected(f)}
-                className="card p-0 overflow-hidden flex-1 min-w-0 hover:border-blue/40 transition-all hover:shadow-lg hover:shadow-blue/8 cursor-pointer group"
+                className="card p-0 overflow-hidden flex-1 min-w-0 hover:border-cyan/25 transition-all duration-300 hover:shadow-lg hover:shadow-cyan/5 cursor-pointer group"
               >
                 <div className="card-inner p-0">
-                  {/* Image */}
-                  <div className="relative h-[72px] overflow-hidden">
-                    <img src={f.img} alt={f.label} loading="lazy" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-bg-card via-transparent to-transparent" />
+                  {/* Image — taller for cinematic feel */}
+                  <div className="relative h-[90px] overflow-hidden">
+                    <img src={f.img} alt={f.label} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-bg-base via-bg-base/20 to-transparent" />
                     {/* Health badge */}
-                    <div className={`absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold border ${scoreBg(score)} ${scoreColor(score)}`}>
+                    <div className={`absolute top-2 right-2 px-2 py-0.5 rounded-lg text-[9px] font-mono font-bold border backdrop-blur-md ${scoreBg(score)} ${scoreColor(score)}`}>
                       {(score * 100).toFixed(0)}%
                     </div>
                   </div>
                   {/* Info */}
-                  <div className="p-2">
-                    <div className="flex items-center gap-1 mb-0.5">
-                      <MapPin size={9} className="text-blue shrink-0" />
+                  <div className="p-3">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <MapPin size={9} className="text-cyan shrink-0" />
                       <span className="text-[11px] font-semibold text-text-primary truncate">{f.label}</span>
                     </div>
-                    <p className="text-[9px] text-text-muted leading-tight truncate">{f.sub}</p>
-                    <div className="flex items-center gap-1 mt-1.5 text-[8px] text-blue opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span>Details</span>
+                    <p className="text-[9px] text-text-dim leading-tight truncate font-light">{f.sub}</p>
+                    <div className="flex items-center gap-1 mt-2 text-[8px] text-cyan/70 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                      <span className="font-medium">View details</span>
                       <ChevronRight size={7} />
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Arrow connector (not after last) */}
+              {/* Arrow connector */}
               {i < facilities.length - 1 && (
-                <div className="flex flex-col items-center px-1.5 shrink-0">
-                  <ArrowRight size={14} className="text-blue/40" />
+                <div className="flex flex-col items-center px-2 shrink-0">
+                  <ArrowRight size={12} className="text-cyan/25" />
                 </div>
               )}
             </div>
@@ -127,21 +127,21 @@ export default function IndiaCorridorMap({ corridorData = [] }) {
       {selected && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setSelected(null)}>
           <div
-            className="w-[520px] max-h-[85vh] overflow-y-auto bg-bg-card border border-border rounded-xl shadow-2xl shadow-black/40"
+            className="w-[520px] max-h-[85vh] overflow-y-auto bg-bg-card/90 backdrop-blur-2xl border border-border rounded-2xl shadow-2xl shadow-black/50"
             onClick={e => e.stopPropagation()}
           >
             {/* Header with image */}
-            <div className="relative h-[140px] overflow-hidden rounded-t-xl">
+            <div className="relative h-[140px] overflow-hidden rounded-t-2xl">
               <img src={selected.img} alt={selected.label} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-bg-card via-bg-card/40 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-bg-base via-bg-base/40 to-transparent" />
               <button onClick={() => setSelected(null)}
                 className="absolute top-3 right-3 w-7 h-7 rounded-full bg-bg-base/80 border border-border flex items-center justify-center text-text-muted hover:text-text-primary transition-colors">
                 <X size={14} />
               </button>
               <div className="absolute bottom-3 left-4">
                 <div className="flex items-center gap-2">
-                  <MapPin size={14} className="text-blue" />
-                  <h2 className="text-[16px] font-bold text-white">{selected.label}</h2>
+                  <MapPin size={14} className="text-cyan" />
+                  <h2 className="text-[16px] font-semibold text-white">{selected.label}</h2>
                   <span className={`text-[11px] font-mono font-bold px-1.5 py-0.5 rounded border ${scoreBg(getScore(selected.region))} ${scoreColor(getScore(selected.region))}`}>
                     {(getScore(selected.region) * 100).toFixed(0)}% Health
                   </span>
@@ -174,7 +174,7 @@ export default function IndiaCorridorMap({ corridorData = [] }) {
                 <div className="grid grid-cols-2 gap-1">
                   {selected.details.capabilities.map((cap, i) => (
                     <div key={i} className="flex items-start gap-1.5 py-1">
-                      <span className="w-1 h-1 rounded-full bg-blue mt-1.5 shrink-0" />
+                      <span className="w-1 h-1 rounded-full bg-cyan mt-1.5 shrink-0" />
                       <span className="text-[10px] text-text-secondary leading-snug">{cap}</span>
                     </div>
                   ))}
